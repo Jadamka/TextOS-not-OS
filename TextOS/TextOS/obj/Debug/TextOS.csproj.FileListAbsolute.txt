@@ -1,0 +1,7 @@
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\bin\Debug\TextOS.exe.config
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\bin\Debug\TextOS.exe
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\bin\Debug\TextOS.pdb
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\obj\Debug\TextOS.csproj.AssemblyReference.cache
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\obj\Debug\TextOS.csproj.CoreCompileInputs.cache
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\obj\Debug\TextOS.exe
+C:\Users\adamk\Desktop\C#\TextOS\TextOS\obj\Debug\TextOS.pdb
