@@ -14,6 +14,8 @@ namespace TextOS
         public static List<Users> users = new List<Users>();
         public static string uAdmin = "admin";
         public static string uPassw = "admin";
+        public static List<OSmenu> OS;
+        static char[] board = { '0', '-', '-', '-', '-', '-', '-', '-', '-', '-' };
 
         static void Main(string[] args)
         {
@@ -111,6 +113,24 @@ namespace TextOS
                 Console.WriteLine(loginMenu.Name);
             }
         }
+        static void WriteOS(List<OSmenu> OS, OSmenu selectedOS)
+        {
+            Console.Clear();
+
+            foreach (OSmenu OSmenu in OS)
+            {
+                if (OSmenu == selectedOS)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                }
+                else
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                }
+
+                Console.WriteLine(OSmenu.Name);
+            }
+        }
 
         // Login/Register
         static void LoginMenu()
@@ -156,6 +176,7 @@ namespace TextOS
         }
         static void Login(List<Users> users)
         {
+            char input;
             Console.Clear();
             string username, password;
             Console.Write("Přihlašovací jméno: ");
@@ -180,7 +201,18 @@ namespace TextOS
 
             if (pass)
             {
-                InsallOS();
+                Console.WriteLine("\n---------------------------------------------");
+                Console.WriteLine("[1] Install OS\t\t[2] Already installed");
+                Console.WriteLine("---------------------------------------------");
+                input = Console.ReadLine()[0];
+                if(input == '1')
+                {
+                    InsallOS();
+                }
+                if(input == '2')
+                {
+                    TextOSMenu();
+                }
             }
             else
             {
@@ -249,7 +281,6 @@ namespace TextOS
                     goto boot;
             }
         }
-
         static void FakeLoader()
         {
             int index = 0;
@@ -311,7 +342,6 @@ namespace TextOS
             Console.ReadKey();
             InstallMenu();
         }
-
         static void InstallMenu()
         {
             char input;
@@ -352,7 +382,6 @@ namespace TextOS
                     break;
             }
         }
-
         static void Language()
         {
             char input;
@@ -455,7 +484,6 @@ namespace TextOS
 
             InstallMenu();
         }
-
         static void FullInstall()
         {
             for (int i = 10; i <= 300; i += 10)
@@ -481,12 +509,232 @@ namespace TextOS
 
             Console.WriteLine("\nStiskni libovolnou klávesu pro vstup do OS");
             Console.ReadKey();
-            TextOS();
+            TextOSMenu();
         }
 
-        static void TextOS()
+        // Full OS
+        static void TextOSMenu()
         {
+            Console.Clear();
 
+            OS = new List<OSmenu>()
+            {
+                new OSmenu("TicTacToe", () => TicTacToe()),
+                new OSmenu("GUI(beta)", () => GUI()),
+            };
+
+            int index = 0;
+
+            WriteOS(OS, OS[index]);
+
+            ConsoleKeyInfo keyInfo;
+            do
+            {
+                keyInfo = Console.ReadKey();
+
+                if (keyInfo.Key == ConsoleKey.DownArrow)
+                {
+                    if (index + 1 < OS.Count)
+                    {
+                        index++;
+                        WriteOS(OS, OS[index]);
+                    }
+                }
+                if (keyInfo.Key == ConsoleKey.UpArrow)
+                {
+                    if (index - 1 >= 0)
+                    {
+                        index--;
+                        WriteOS(OS, OS[index]);
+                    }
+                }
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    OS[index].Selected.Invoke();
+                    index = 0;
+                }
+            } while (keyInfo.Key != ConsoleKey.Enter);
+        }
+        static void GUI()
+        {
+            Demo gui = new Demo();
+        }
+        static void TicTacToe()
+        {
+            Console.Clear();
+            Board(board);
+            Play(board);
+        }
+        static void Board(char[] board)
+        {
+            Console.WriteLine("| {0} | {1} | {2} |", board[1], board[2], board[3]);
+            Console.WriteLine("-------------");
+            Console.WriteLine("| {0} | {1} | {2} |", board[4], board[5], board[6]);
+            Console.WriteLine("-------------");
+            Console.WriteLine("| {0} | {1} | {2} |", board[7], board[8], board[9]);
+        }
+        static void Play(char[] board)
+        {
+            int round = 1;
+            int inp;
+            bool winner = false;
+
+            while (round <= 9 && !winner)
+            {
+                Console.WriteLine("Input (0 to quit): ");
+                inp = int.Parse(Console.ReadLine());
+                if (round % 2 != 0)
+                {
+                    if(inp == 0)
+                    {
+                        TextOSMenu();
+                    }
+                    else if (inp < 1 || inp > 9 || board[inp] != '-')
+                    {
+                        Console.Clear();
+                        Board(board);
+                        Console.WriteLine("Wrong input!");
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        board[inp] = 'O';
+                        Board(board);
+                        round++;
+                    }
+                }
+                else
+                {
+                    if (inp == 0)
+                    {
+                        TextOSMenu();
+                    }
+                    else if (inp < 1 || inp > 9 || board[inp] != '-')
+                    {
+                        Console.Clear();
+                        Board(board);
+                        Console.WriteLine("Wrong input!");
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        board[inp] = 'X';
+                        Board(board);
+                        round++;
+                    }
+                }
+
+                winner = CheckWin(board);
+                if (winner)
+                {
+                    Console.ReadKey();
+                    TextOSMenu();
+                }
+            }
+        }
+        static bool CheckWin(char[] board)
+        {
+            //O wins
+            if (board[1] == board[2] && board[2] == board[3] && board[1] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[4] == board[5] && board[5] == board[6] && board[4] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[7] == board[8] && board[8] == board[9] && board[7] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[1] == board[4] && board[4] == board[7] && board[1] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[2] == board[5] && board[5] == board[8] && board[2] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[3] == board[6] && board[6] == board[9] && board[3] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[1] == board[5] && board[5] == board[9] && board[1] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+            else if (board[3] == board[5] && board[5] == board[7] && board[3] == 'O')
+            {
+                Console.Clear();
+                Console.WriteLine("O wins");
+                return true;
+            }
+
+            //X wins
+            if (board[1] == board[2] && board[2] == board[3] && board[1] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[4] == board[5] && board[5] == board[6] && board[4] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[7] == board[8] && board[8] == board[9] && board[7] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[1] == board[4] && board[4] == board[7] && board[1] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[2] == board[5] && board[5] == board[8] && board[2] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[3] == board[6] && board[6] == board[9] && board[3] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[1] == board[5] && board[5] == board[9] && board[1] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+            else if (board[3] == board[5] && board[5] == board[7] && board[3] == 'X')
+            {
+                Console.Clear();
+                Console.WriteLine("X wins");
+                return true;
+            }
+
+            return false;
         }
     }
 }
